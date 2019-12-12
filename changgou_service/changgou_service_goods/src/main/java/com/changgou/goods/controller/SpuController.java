@@ -124,4 +124,57 @@ public class SpuController {
         spuService.audit(id);
         return new Result();
     }
+
+    /**
+     * 商品下架
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/pull/{id}")
+    public Result pull(@PathVariable String id) {
+        spuService.pull(id);
+        return new Result();
+    }
+
+    /**
+     * 商品上架
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/put/{id}")
+    public Result put(@PathVariable String id) {
+        spuService.put(id);
+        return new Result();
+    }
+
+    /**
+     * 数据恢复
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/restore/{id}")
+    public Result restore(@PathVariable String id) {
+        spuService.restore(id);
+        return new Result();
+    }
+
+    /**
+     * 物理删除
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/realDelete/{id}")
+    public Result realDelete(@PathVariable String id) {
+        spuService.realDelete(id);
+        return new Result();
+    }
 }
+
+
+
+
+
