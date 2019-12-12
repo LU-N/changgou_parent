@@ -83,4 +83,11 @@ public interface SpuService {
      * @param goods
      */
     void update(Goods goods);
+
+    /**
+     * 审核
+     *
+     * @param id
+     */
+    void audit(String id);
 }

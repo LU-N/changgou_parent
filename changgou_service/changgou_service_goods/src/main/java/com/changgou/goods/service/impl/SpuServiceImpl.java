@@ -7,7 +7,6 @@ import com.changgou.goods.pojo.*;
 import com.changgou.goods.service.SpuService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -193,6 +192,31 @@ public class SpuServiceImpl implements SpuService {
 
         //保存sku列表
         saveSkuList(goods);
+    }
+
+    /**
+     * 审核
+     *
+     * @param id
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void audit(String id) {
+        //查询spu对象
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if (spu == null) {
+            throw new RuntimeException("当前商品不存在");
+        }
+        //判断spu是否为删除状态
+        String status = "1";
+        if (status.equals(spu.getIsDelete())) {
+            throw new RuntimeException("当前商品处于删除状态");
+        }
+        //不处于删除状态，修改审核状态为1，上架状态为1
+        spu.setStatus(status);
+        spu.setIsMarketable(status);
+        //执行修改操作
+        spuMapper.updateByPrimaryKeySelective(spu);
     }
 
     /**

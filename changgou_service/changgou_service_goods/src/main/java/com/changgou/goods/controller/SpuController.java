@@ -25,8 +25,6 @@ public class SpuController {
     @Autowired
     private SpuService spuService;
 
-    @Autowired
-
 
     /**
      * 查询全部数据
@@ -113,5 +111,17 @@ public class SpuController {
         Page<Spu> pageList = spuService.findPage(searchMap, page, size);
         PageResult pageResult = new PageResult(pageList.getTotal(), pageList.getResult());
         return new Result(true, StatusCode.OK, "查询成功", pageResult);
+    }
+
+    /**
+     * 审核
+     *
+     * @param id
+     * @return
+     */
+    @PutMapping("/audit/{id}")
+    public Result audit(@PathVariable String id) {
+        spuService.audit(id);
+        return new Result();
     }
 }
