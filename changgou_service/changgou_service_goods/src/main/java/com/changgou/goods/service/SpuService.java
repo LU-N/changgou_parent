@@ -90,32 +90,4 @@ public interface SpuService {
      * @param id
      */
     void audit(String id);
-
-    /**
-     * 商品下架
-     *
-     * @param id
-     */
-    void pull(String id);
-
-    /**
-     * 商品上架
-     *
-     * @param id
-     */
-    void put(String id);
-
-    /**
-     * 恢复数据
-     *
-     * @param id
-     */
-    void restore(String id);
-
-    /**
-     * 物理删除
-     *
-     * @param id
-     */
-    void realDelete(String id);
 }
