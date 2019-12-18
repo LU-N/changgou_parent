@@ -19,6 +19,8 @@
 		<module>changgou_canal</module>
         <module>changgou_service/changgou_service_file</module>
         <module>changgou_gateway/changgou_gateway_system</module>
+        <module>changgou_service_api/changgou_service_search_api</module>
+        <module>changgou_service/changgou_service_search</module>
     </modules>
 
     <parent>
