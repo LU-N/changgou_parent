@@ -10,7 +10,7 @@ import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
+
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -18,7 +18,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -28,10 +28,7 @@ import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPa
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -170,11 +167,38 @@ public class SearchServiceImpl implements SearchService {
             //封装规格分组结果
             StringTerms specTerms = (StringTerms) resultInfo.getAggregation(skuSpec);
             List<String> specList = specTerms.getBuckets().stream().map(bucket -> bucket.getKeyAsString()).collect(Collectors.toList());
-            resultMap.put("specList", specList);
+            resultMap.put("specList", formartSpec(specList));
             //当前页
             resultMap.put("pageNum", pageNum);
             return resultMap;
         }
         return null;
+    }
+
+    /**
+     * 将数据转换成适合页面显示的格式
+     *
+     * @param specList
+     * @return
+     */
+    public Map<String, Set<String>> formartSpec(List<String> specList) {
+        Map<String, Set<String>> resultMap = new HashMap<>(16);
+        if (specList != null && specList.size() > 0) {
+            for (String specJsonString : specList) {
+                //将获得到的json转成map
+                Map<String, String> specMap = JSON.parseObject(specJsonString, Map.class);
+                for (String specKey : specMap.keySet()) {
+                    Set<String> strings = resultMap.get(specKey);
+                    if (strings == null) {
+                        strings = new HashSet<String>();
+                    }
+                    //将规格的值放入set中
+                    strings.add(specMap.get(specKey));
+                    //将set放入map中
+                    resultMap.put(specKey, strings);
+                }
+            }
+        }
+        return resultMap;
     }
 }
