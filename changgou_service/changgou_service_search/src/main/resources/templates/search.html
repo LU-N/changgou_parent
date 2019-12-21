@@ -634,11 +634,8 @@
                     <a href="javascript:void(0);">更多</a>
                 </div>
             </div>
-            <div class="type-wrap" th:each="spec,specStat:${result.specList}"
-                 th:unless="${#maps.containsKey(searchMap,'spec_' + spec.key)}">
-                <div class="fl key" th:text="${spec.key}">
-
-                </div>
+            <div class="type-wrap" th:each="spec,specStat:${result.specList}" th:unless="${#maps.containsKey(searchMap,'spec_' + spec.key)}">
+                <div class="fl key" th:text="${spec.key}"></div>
                 <div class="fl value">
                     <ul class="type-list">
                         <li th:each="op,opstat:${spec.value}">

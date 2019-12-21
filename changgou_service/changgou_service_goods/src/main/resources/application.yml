@@ -5,7 +5,7 @@ spring:
     name: goods
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.142.128:3306/changgou_goods?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://192.168.200.128:3306/changgou_goods?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: root
   main:
@@ -40,3 +40,6 @@ hystrix:
 
 workerId: 0
 datacenterId: 0
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

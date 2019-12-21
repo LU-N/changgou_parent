@@ -16,7 +16,7 @@
         <module>changgou_web</module>
         <module>changgou_common</module>
         <module>changgou_common_db</module>
-		<module>changgou_canal</module>
+        <module>changgou_canal</module>
         <module>changgou_service/changgou_service_file</module>
         <module>changgou_gateway/changgou_gateway_system</module>
         <module>changgou_service_api/changgou_service_search_api</module>
@@ -40,6 +40,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!--热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
         </dependency>
     </dependencies>
 

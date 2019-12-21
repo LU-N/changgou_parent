@@ -46,5 +46,11 @@ public class SpuListener {
             //发送到mq商品上架交换器上
             rabbitTemplate.convertAndSend(RabbitMQConfig.GOODS_UP_EXCHANGE, "", newMap.get("id"));
         }
+        //获取最新审核商品
+        if ("0".equals(oldMap.get("status")) && "1".equals(newMap.get("status"))) {
+            //发送商品spuId
+            rabbitTemplate.convertAndSend(RabbitMQConfig.GOODS_UP_EXCHANGE, "", newMap.get("id"));
+
+        }
     }
 }

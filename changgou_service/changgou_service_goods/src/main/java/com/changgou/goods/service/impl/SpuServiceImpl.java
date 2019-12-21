@@ -173,6 +173,22 @@ public class SpuServiceImpl implements SpuService {
         return goods;
     }
 
+    public Goods findSpuListById(String id) {
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+
+        //查询sku列表
+        Example example = new Example(Sku.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("spuId", id);
+        List<Sku> skuList = skuMapper.selectByExample(example);
+
+        //封装返回
+        Goods goods = new Goods();
+        goods.setSpu(spu);
+        goods.setSkuList(skuList);
+        return goods;
+    }
+
     /**
      * 修改数据
      *
