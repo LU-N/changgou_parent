@@ -22,6 +22,8 @@
         <module>changgou_gateway/changgou_gateway_system</module>
         <module>changgou_service_api/changgou_service_search_api</module>
         <module>changgou_service/changgou_service_search</module>
+        <module>changgou_gateway/changgou_gateway_web</module>
+        <module>changgou_web/changgou_web_order</module>
     </modules>
 
     <parent>

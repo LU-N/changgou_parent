@@ -6,6 +6,9 @@ import com.github.pagehelper.Page;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 public interface UserService {
 
     /***
