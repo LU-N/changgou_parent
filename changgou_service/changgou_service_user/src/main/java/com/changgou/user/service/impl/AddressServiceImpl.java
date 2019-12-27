@@ -12,6 +12,9 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 @Service
 public class AddressServiceImpl implements AddressService {
 
@@ -102,6 +105,20 @@ public class AddressServiceImpl implements AddressService {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
         return (Page<Address>)addressMapper.selectByExample(example);
+    }
+
+    /**
+     * 收件地址查询
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public List<Address> list(String username) {
+        Address address = new Address();
+        address.setUsername(username);
+        List<Address> addressList = addressMapper.select(address);
+        return addressList;
     }
 
     /**

@@ -6,6 +6,9 @@ import com.github.pagehelper.Page;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 public interface SkuService {
 
     /***
@@ -63,6 +66,12 @@ public interface SkuService {
      */
     Page<Sku> findPage(Map<String, Object> searchMap, int page, int size);
 
+    /**
+     * 减少库存
+     *
+     * @param username
+     */
+    void decrCount(String username);
 
 
 

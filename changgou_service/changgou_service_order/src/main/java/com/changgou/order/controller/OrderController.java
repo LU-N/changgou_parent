@@ -2,6 +2,7 @@ package com.changgou.order.controller;
 import com.changgou.entity.PageResult;
 import com.changgou.entity.Result;
 import com.changgou.entity.StatusCode;
+import com.changgou.order.config.TokenDecode;
 import com.changgou.order.service.OrderService;
 import com.changgou.order.pojo.Order;
 import com.github.pagehelper.Page;
@@ -9,14 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+/**
+ * @author JinLu
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/order")
 public class OrderController {
-
-
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private TokenDecode tokenDecode;
 
     /**
      * 查询全部数据
@@ -47,6 +52,9 @@ public class OrderController {
      */
     @PostMapping
     public Result add(@RequestBody Order order){
+        //获取登录人名称
+        String username = tokenDecode.getUserInfo().get("username");
+        order.setUsername(username);
         orderService.add(order);
         return new Result(true,StatusCode.OK,"添加成功");
     }

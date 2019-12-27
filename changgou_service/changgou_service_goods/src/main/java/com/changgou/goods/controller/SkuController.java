@@ -131,5 +131,15 @@ public class SkuController {
         return skuList;
     }
 
-
+    /**
+     * 删减库存
+     *
+     * @param username
+     * @return
+     */
+    @PostMapping("/decr/count")
+    public Result decrCount(@RequestParam("username") String username) {
+        skuService.decrCount(username);
+        return new Result(true, StatusCode.OK,"库存删减成功");
+    }
 }

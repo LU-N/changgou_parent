@@ -3,20 +3,29 @@ package com.changgou.goods.service.impl;
 import com.changgou.goods.dao.SkuMapper;
 import com.changgou.goods.service.SkuService;
 import com.changgou.goods.pojo.Sku;
+import com.changgou.order.pojo.OrderItem;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 @Service
 public class SkuServiceImpl implements SkuService {
 
     @Autowired
     private SkuMapper skuMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 查询全部列表
@@ -102,6 +111,25 @@ public class SkuServiceImpl implements SkuService {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
         return (Page<Sku>)skuMapper.selectByExample(example);
+    }
+
+    /**
+     * 减少库存
+     *
+     * @param username
+     */
+    @Override
+    public void decrCount(String username) {
+        //1.获取购物车中的数据
+        List<OrderItem> orderItemList = redisTemplate.boundHashOps("cart_" + username).values();
+
+        //2.循环扣减库存并增加销量
+        for (OrderItem orderItem : orderItemList) {
+            int count = skuMapper.decrCount(orderItem);
+            if (count <= 0){
+                throw new RuntimeException("库存不足,请重试");
+            }
+        }
     }
 
     /**

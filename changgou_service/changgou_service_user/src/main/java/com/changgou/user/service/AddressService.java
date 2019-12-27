@@ -6,6 +6,9 @@ import com.github.pagehelper.Page;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 public interface AddressService {
 
     /***
@@ -16,6 +19,7 @@ public interface AddressService {
 
     /**
      * 根据ID查询
+     *
      * @param id
      * @return
      */
@@ -63,7 +67,11 @@ public interface AddressService {
      */
     Page<Address> findPage(Map<String, Object> searchMap, int page, int size);
 
-
-
-
+    /**
+     * 收件地址查询
+     *
+     * @param username
+     * @return
+     */
+    List<Address> list(String username);
 }
