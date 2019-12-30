@@ -6,6 +6,9 @@ import com.github.pagehelper.Page;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 public interface OrderService {
 
     /***
@@ -25,7 +28,7 @@ public interface OrderService {
      * 新增
      * @param order
      */
-    void add(Order order);
+    String add(Order order);
 
     /***
      * 修改
@@ -64,6 +67,11 @@ public interface OrderService {
     Page<Order> findPage(Map<String, Object> searchMap, int page, int size);
 
 
-
-
+    /**
+     * 修改订单的支付状态，并修改日志
+     *
+     * @param orderId
+     * @param transactionId
+     */
+    void updatePayStatus(String orderId, String transactionId);
 }

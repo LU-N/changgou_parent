@@ -8,12 +8,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
+ * @EnableScheduling 开启定时任务
+ *
  * @author JinLu
  */
 @SpringBootApplication
+@EnableEurekaClient
+@EnableScheduling
 @EnableFeignClients(basePackages = "com.changgou.goods.feign")
 @MapperScan(basePackages = {"com.changgou.order.dao"})
 public class OrderApplication {

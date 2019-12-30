@@ -1,22 +1,34 @@
 package com.changgou.order.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fescar.spring.annotation.GlobalTransactional;
 import com.changgou.entity.IdWorker;
 import com.changgou.goods.feign.SkuFeign;
+import com.changgou.order.config.RabbitMQConfig;
 import com.changgou.order.dao.OrderItemMapper;
+import com.changgou.order.dao.OrderLogMapper;
 import com.changgou.order.dao.OrderMapper;
+import com.changgou.order.dao.TaskMapper;
 import com.changgou.order.pojo.OrderItem;
+import com.changgou.order.pojo.OrderLog;
+import com.changgou.order.pojo.Task;
 import com.changgou.order.service.CartService;
 import com.changgou.order.service.OrderService;
 import com.changgou.order.pojo.Order;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +55,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private SkuFeign skuFeign;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private OrderLogMapper orderLogMapper;
+
 
     /**
      * 查询全部列表
@@ -72,7 +91,8 @@ public class OrderServiceImpl implements OrderService {
      * @param order
      */
     @Override
-    public void add(Order order) {
+    @GlobalTransactional(name = "order_add")
+    public String add(Order order) {
         //1.获取购物车的相关数据(redis)
         Map cartMap = cartService.list(order.getUsername());
         List<OrderItem> orderItemList = (List<OrderItem>) cartMap.get("orderItemList");
@@ -110,8 +130,24 @@ public class OrderServiceImpl implements OrderService {
         //扣减库存并增加销量
         skuFeign.decrCount(order.getUsername());
 
+        //添加任务数据
+        System.out.println("向订单数据库中的任务表去添加任务数据");
+        Task task = new Task();
+        task.setCreateTime(new Date());
+        task.setUpdateTime(new Date());
+        task.setMqExchange(RabbitMQConfig.EX_BUYING_ADDPOINTUSER);
+        task.setMqRoutingkey(RabbitMQConfig.CG_BUYING_ADDPOINT_KEY);
+
+        Map map = new HashMap();
+        map.put("username", order.getUsername());
+        map.put("orderId", orderId);
+        map.put("point", order.getPayMoney());
+        task.setRequestBody(JSON.toJSONString(map));
+        taskMapper.insertSelective(task);
         //5.删除购物车数据(redis)
         redisTemplate.delete("cart_" + order.getUsername());
+
+        return orderId;
     }
 
 
@@ -174,6 +210,42 @@ public class OrderServiceImpl implements OrderService {
         PageHelper.startPage(page, size);
         Example example = createExample(searchMap);
         return (Page<Order>) orderMapper.selectByExample(example);
+    }
+
+    /**
+     * 修改订单的支付状态
+     *
+     * @param orderId
+     * @param transactionId
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePayStatus(String orderId, String transactionId) {
+
+        //1.查询订单
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if (order != null && "0".equals(order.getPayStatus())) {
+            //2.修改订单的支付状态
+            order.setPayStatus("1");
+            order.setOrderStatus("1");
+            order.setUpdateTime(new Date());
+            order.setPayTime(new Date());
+            order.setTransactionId(transactionId); //微信返回的交易流水号
+            orderMapper.updateByPrimaryKeySelective(order);
+
+            //3.记录订单日志
+            OrderLog orderLog = new OrderLog();
+            orderLog.setId(idWorker.nextId() + "");
+            orderLog.setOperater("system");
+            orderLog.setOperateTime(new Date());
+            orderLog.setOrderStatus("1");
+            orderLog.setPayStatus("1");
+            orderLog.setRemarks("交易流水号:" + transactionId);
+            orderLog.setOrderId(orderId);
+            orderLogMapper.insert(orderLog);
+        }
+
+
     }
 
     /**
