@@ -12,18 +12,17 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
- * @EnableScheduling 开启定时任务
- *
  * @author JinLu
+ * @EnableScheduling 开启定时任务
  */
 @SpringBootApplication
 @EnableEurekaClient
 @EnableScheduling
-@EnableFeignClients(basePackages = "com.changgou.goods.feign")
+@EnableFeignClients(basePackages = {"com.changgou.goods.feign", "com.changgou.pay.feign"})
 @MapperScan(basePackages = {"com.changgou.order.dao"})
 public class OrderApplication {
     public static void main(String[] args) {
-        SpringApplication.run( OrderApplication.class);
+        SpringApplication.run(OrderApplication.class);
     }
 
     /**
@@ -38,7 +37,7 @@ public class OrderApplication {
 
     @Bean
     public IdWorker idWorker() {
-        return new IdWorker(1,1);
+        return new IdWorker(1, 1);
     }
 
     @Bean

@@ -140,6 +140,12 @@ public class SkuController {
     @PostMapping("/decr/count")
     public Result decrCount(@RequestParam("username") String username) {
         skuService.decrCount(username);
-        return new Result(true, StatusCode.OK,"库存删减成功");
+        return new Result(true, StatusCode.OK, "库存删减成功");
+    }
+
+    @RequestMapping("/resumeStockNum")
+    public Result resumeStockNum(@RequestParam("skuId") String skuId,@RequestParam("num")Integer num){
+        skuService.resumeStockNum(skuId, num);
+        return new Result(true,StatusCode.OK,"回滚库存成功");
     }
 }

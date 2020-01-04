@@ -23,10 +23,6 @@ import java.util.Map;
  */
 @Service
 public class WXPayServiceImpl implements WXPayService {
-
-
-    private WXPay wxPay;
-
     @Value("${wxpay.notify_url}")
     private String notify_url;
 
@@ -76,6 +72,12 @@ public class WXPayServiceImpl implements WXPayService {
         }
     }
 
+    /**
+     * 查询订单
+     *
+     * @param orderId
+     * @return
+     */
     @Override
     public Map queryOrder(String orderId) {
         try {
@@ -86,6 +88,35 @@ public class WXPayServiceImpl implements WXPayService {
             map.put("nonce_str", WXPayUtil.generateNonceStr());
             String xml = WXPayUtil.generateSignedXml(map, "T6m9iK73b0kn9g5v426MKfHQH7X8rKwb");
 
+            MultiValueMap headers = new LinkedMultiValueMap();
+
+            headers.set("content-type", "text/xml;charset=utf-8");
+            HttpEntity httpEntity = new HttpEntity(xml, headers);
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://api.mch.weixin.qq.com/pay/orderquery", httpEntity, String.class);
+            String body = responseEntity.getBody();
+            Map<String, String> result = WXPayUtil.xmlToMap(body);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 关闭订单
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Map closeOrder(String orderId) {
+        try {
+            Map<String, String> map = new HashMap<>(16);
+            map.put("appid", "wx8397f8696b538317");
+            map.put("mch_id", "1473426802");
+            map.put("nonce_str", WXPayUtil.generateNonceStr());
+            map.put("out_trade_no", orderId);
+            String xml = WXPayUtil.generateSignedXml(map, "T6m9iK73b0kn9g5v426MKfHQH7X8rKwb");
             MultiValueMap headers = new LinkedMultiValueMap();
 
             headers.set("content-type", "text/xml;charset=utf-8");

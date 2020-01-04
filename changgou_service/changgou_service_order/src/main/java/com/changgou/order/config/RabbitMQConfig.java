@@ -25,6 +25,9 @@ public class RabbitMQConfig {
 
     public static final String ORDER_PAY="order_pay";
 
+    public static final String ORDER_TACK="order_tack";
+
+
     //声明交换机
     @Bean(EX_BUYING_ADDPOINTUSER)
     public Exchange EX_BUYING_ADDPOINTUSER(){
@@ -56,6 +59,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue queue(){
         return  new Queue(ORDER_PAY);
+    }
+
+    @Bean
+    public Queue ORDER_TACK() {
+        return new Queue(ORDER_TACK);
     }
 
 }

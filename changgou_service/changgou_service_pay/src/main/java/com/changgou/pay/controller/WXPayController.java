@@ -9,16 +9,16 @@ import com.changgou.util.ConvertUtils;
 import com.github.wxpay.sdk.WXPayUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author JinLu
+ */
 @RequestMapping("/wxpay")
 @RestController
 public class WXPayController {
@@ -39,12 +39,6 @@ public class WXPayController {
     @GetMapping("/nativePay")
     public Result nativePay(@RequestParam("orderId") String orderId, @RequestParam("money") Integer money) {
         Map resultMap = wxPayService.nativePay(orderId, money);
-        return new Result(true, StatusCode.OK, "", resultMap);
-    }
-
-    @GetMapping("/queryOrder")
-    public Result queryOrder(@RequestParam("orderId") String orderId) {
-        Map resultMap = wxPayService.queryOrder(orderId);
         return new Result(true, StatusCode.OK, "", resultMap);
     }
 
@@ -85,8 +79,6 @@ public class WXPayController {
                 //输出错误原因
                 System.out.println(map.get("err_code_des"));
             }
-
-
             //给微信一个结果通知
             response.setContentType("text/xml");
             String data = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
@@ -94,6 +86,29 @@ public class WXPayController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * 基于微信查询订单
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/query/{orderId}")
+    public Result queryOrder(@PathVariable("orderId") String orderId) {
+        Map map = wxPayService.queryOrder(orderId);
+        return new Result(true, StatusCode.OK, "查询订单成功", map);
+    }
+
+    /**
+     * 基于微信关闭订单
+     *
+     * @param orderId
+     * @return
+     */
+    @PutMapping("/close/{orderId}")
+    public Result closeOrder(@PathVariable("orderId") String orderId) {
+        Map map = wxPayService.closeOrder(orderId);
+        return new Result(true, StatusCode.OK, "关闭订单成功", map);
     }
 }

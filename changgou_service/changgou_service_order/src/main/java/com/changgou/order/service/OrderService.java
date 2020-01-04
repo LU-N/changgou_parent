@@ -19,6 +19,7 @@ public interface OrderService {
 
     /**
      * 根据ID查询
+     *
      * @param id
      * @return
      */
@@ -74,4 +75,31 @@ public interface OrderService {
      * @param transactionId
      */
     void updatePayStatus(String orderId, String transactionId);
+
+    /**
+     * 关闭订单
+     *
+     * @param message
+     */
+    void closeOrder(String message);
+
+    /**
+     * 批量发货
+     *
+     * @param orders
+     */
+    void batchSend(List<Order> orders);
+
+    /**
+     * 手动确认收货
+     *
+     * @param orderId
+     * @param operator
+     */
+    void confirmTask(String orderId, String operator);
+
+    /**
+     * 自动收货
+     */
+    void autoTack();
 }
